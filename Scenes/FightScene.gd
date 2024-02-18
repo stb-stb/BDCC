@@ -364,6 +364,9 @@ func _react(_action: String, _args):
 				enemyCharacter.getInventory().forceEquipByRemoveOther(item, GM.pc)
 				enemyCharacter.getBuffsHolder().calculateBuffs()
 				#enemyCharacter.updateNonBattleEffects()
+
+				if restraintData.canBeLocked() && RNG.chance(33): 
+					restraintData.lockIt()
 				
 				var restraintsAmount = enemyCharacter.getInventory().getEquppedRestraints().size()
 				if(enemyCharacter.shouldReactToRestraint(restraintData.getRestraintType(), restraintsAmount, true)):
@@ -649,7 +652,7 @@ func aiTurn():
 		var addPain = 0
 		var addStamina = 0
 		
-		var struggleData = restraintData.doStruggle(enemyCharacter, minigameStatus)
+		var struggleData = restraintData.doStruggle(enemyCharacter, minigameStatus).build()
 		if(struggleData.has("damage")):
 			damage = struggleData["damage"] * minigameStatus
 		if(struggleData.has("lust") && struggleData["lust"] > 0):
