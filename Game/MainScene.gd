@@ -572,6 +572,12 @@ func hoursPassed(howMuch):
 		var character = getCharacter(characterID)
 		if(character != null):
 			character.hoursPassed(howMuch)
+	
+	if(dynamicCharactersPools.has(CharacterPool.Slaves)):
+		for characterID in dynamicCharactersPools[CharacterPool.Slaves]:
+			var character = getCharacter(characterID)
+			if(character != null && character.isSlaveToPlayer()):
+				character.getNpcSlavery().hoursPassed(howMuch)
 
 func processTimeUntil(newseconds):
 	if(timeOfDay >= newseconds):
@@ -596,12 +602,22 @@ func startNewDay():
 	
 	Flag.resetFlagsOnNewDay()
 	roomMemoriesProcessDay()
+	npcSlaveryOnNewDay()
 	
 	doTimeProcess(timediff)
 	
 	SAVE.triggerAutosave()
 	
 	return timediff
+
+func npcSlaveryOnNewDay():
+	for slaveID in getDynamicCharacterIDsFromPool(CharacterPool.Slaves):
+		var character = getCharacter(slaveID)
+		if(character == null):
+			continue
+		if(character.isSlaveToPlayer()):
+			var npcSlave = character.getNpcSlavery()
+			npcSlave.onNewDay()
 
 func getVisibleTime():
 	var text = ""
@@ -1205,3 +1221,34 @@ func _on_GameUI_onDevComButton():
 	if(devCommentary == null || devCommentary == ""):
 		return
 	GM.ui.showDevCommentary(devCommentary)
+
+func setLocationName(locationName: String):
+	if(GM.pc.isBlindfolded()):
+		locationName = "???"
+	
+	GM.ui.setLocationName(locationName)
+
+func aimCamera(roomID: String):
+	GM.world.aimCamera(roomID)
+
+func aimCameraAndSetLocName(roomID: String):
+	GM.world.aimCamera(roomID)
+	
+	var room = GM.world.getRoomByID(roomID)
+	if(!room):
+		return
+	setLocationName(room.getName())
+
+func playerHasCompanions():
+	for scene in sceneStack:
+		var sceneComps = scene.getSceneCompanions()
+		if(sceneComps != null && sceneComps.size() > 0):
+			return true
+	return false
+
+func playerHasCompanion(charID):
+	for scene in sceneStack:
+		var sceneComps = scene.getSceneCompanions()
+		if(sceneComps != null && sceneComps.has(charID)):
+			return true
+	return false

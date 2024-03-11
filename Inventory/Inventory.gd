@@ -420,6 +420,14 @@ func getEquippedItemsWithTag(tag):
 			result.append(item)
 	return result
 	
+func hasEquippedItemWithTag(tag):
+	for itemSlot in equippedItems.keys():
+		var item = equippedItems[itemSlot]
+
+		if(item.hasTag(tag)):
+			return true
+	return false
+	
 func getEquppedRestraints():
 	var result = []
 	
@@ -441,6 +449,17 @@ func hasRemovableRestraints():
 				return true
 	return false
 
+func getEquppedRemovableRestraints():
+	var result = []
+	
+	for itemSlot in equippedItems:
+		var item = equippedItems[itemSlot]
+		if(item.isRestraint()):
+			var restraintData = item.getRestraintData()
+			if(restraintData.canStruggle()):
+				result.append(item)
+	return result
+
 func forceRestraintsWithTag(tag, amount = 1):
 	var itemIDs = GlobalRegistry.getItemIDsByTag(tag)
 	itemIDs.shuffle()
@@ -449,6 +468,8 @@ func forceRestraintsWithTag(tag, amount = 1):
 	
 	for itemID in itemIDs:
 		var potentialItem = GlobalRegistry.getItemRef(itemID)
+		if !RNG.chance(potentialItem.rarity()):
+			continue
 		
 		var slot = potentialItem.getClothingSlot()
 		if(slot == null || !canEquipSlot(slot)):
@@ -485,6 +506,8 @@ func getRestraintsThatCanBeForcedDuringSex(tag):
 	
 	for itemID in itemIDs:
 		var potentialItem = GlobalRegistry.getItemRef(itemID)
+		if !RNG.chance(potentialItem.rarity()):
+			continue
 		
 		var slot = potentialItem.getClothingSlot()
 		if(slot == null || !canEquipSlot(slot)):

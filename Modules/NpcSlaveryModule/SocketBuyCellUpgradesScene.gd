@@ -14,6 +14,7 @@ func _run():
 		playAnimation(StageScene.Duo, "stand", {npc="socket"})
 		
 		saynn("Socket shows you a list of upgrades that she can do to your cell.")
+		addButtonAt(14, "Back", "Enough shopping", "endthescene")
 		
 		var howManySlavesSpaces = getModule("NpcSlaveryModule").getSlavesSpace()
 		if(howManySlavesSpaces == 0):
@@ -38,10 +39,18 @@ func _run():
 		saynn("Cost: "+((str(sybianPrice)+" credits") if !hasSybian else "Bought!")+"")
 		if(!hasSybian):
 			addButtonWithChecks("Sybian", "Pay to get a sybian installed in your cell", "pay_upgrade", ["NpcSlaveryModule.hasSybian", sybianPrice, "Sybian machine has been installed in your cell"], [[ButtonChecks.HasCredits, sybianPrice]])
+	
+		var hasHorse = getFlag("NpcSlaveryModule.hasWoodenHorse", false)
+		var horsePrice = 30
+		sayn("[b]Wooden horse[/b]")
+		if(canHaveSlaves):
+			sayn("Install a wooden horse torture device in your cell that you can use to punish your slaves.")
 		else:
-			addDisabledButton("Sybian", "You already have this")
-
-		addButtonAt(14, "Back", "Enough shopping", "endthescene")
+			sayn("Install a wooden horse torture device in your cell. For no particular reason.")
+		saynn("Cost: "+((str(horsePrice)+" credits") if !hasHorse else "Bought!")+"")
+		if(!hasHorse):
+			addButtonWithChecks("Wooden horse", "Pay to get a wooden horse installed in your cell", "pay_upgrade", ["NpcSlaveryModule.hasWoodenHorse", horsePrice, "Wooden horse has been installed in your cell"], [[ButtonChecks.HasCredits, horsePrice]])
+	
 	
 	if(state == "do_cell_expansion"):
 		saynn("You pay Socket the required amount of credits for the cell expansion upgrade.")

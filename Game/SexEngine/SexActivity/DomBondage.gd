@@ -210,7 +210,7 @@ func processTurn():
 		
 		if(dom.isPlayer()):
 			dom.getInventory().removeItem(item)
-		if item.isRestraint() && item.getRestraintData().canBeLocked() && RNG.chance(66):
+		if item.isRestraint() && item.getRestraintData().canBeLocked() && RNG.chance(33):
 			item.getRestraintData().lockIt()
 		sub.getInventory().forceEquipByStoreOtherUnlessRestraint(item, dom)
 		#sub.getBuffsHolder().calculateBuffs()
@@ -221,6 +221,7 @@ func processTurn():
 		])
 		text += GM.ui.processString(item.getForcedOnMessage(false), {receiver=subID})
 		
+		sendSexEvent(SexEvent.BondageGearForced, domID, subID, {itemID=item.id})
 		getSexEngine().addTrackedGear(domID, subID, item.uniqueID)
 		progressGoal(SexGoal.TieUp)
 		

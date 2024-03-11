@@ -16,7 +16,7 @@ var shouldPlayAnimations = true
 #var minigameScene = preload("res://Game/Minigames/Struggling/StrugglingGame.tscn")
 #var minigameScene = preload("res://Game/Minigames/ClickAtTheRightTime/ClickAtTheRightTime.tscn")
 
-var minigameScene = preload("res://Game/Minigames/ClickAtTheRightTime/ClickAtTheRightTime.tscn")
+var minigameScene = preload("res://Game/Minigames/MatchGame/MatchGame.tscn")
 var pickMinigameScene = preload("res://Game/Minigames/ClickAtTheRightTime/ClickAtTheRightTime.tscn")
 var cutMinigameScene = preload("res://Game/Minigames/ClickAtTheRightTime/ClickAtTheRightTime.tscn")
 var unlockMinigameScene = preload("res://Game/Minigames/ClickAtTheRightTime/ClickAtTheRightTime.tscn")
@@ -148,7 +148,7 @@ func _run():
 
 		var game = minigameScene.instance()
 		if game.has_method("config"):
-			game.config({"level":restraintData.getLevel()})
+			game.config({"level":restraintData.getLevel(), "blind":GM.pc.isBlindfolded()})
 		GM.ui.addCustomControl("minigame", game)
 		configureMinigame(game, restraintData)
 		game.connect("minigameCompleted", self, "onMinigameCompleted")
@@ -165,7 +165,7 @@ func _run():
 		
 		var game = pickMinigameScene.instance()
 		if game.has_method("config"):
-			game.config({"level":restraintData.getLevel()})
+			game.config({"level":restraintData.getLevel(), "blind":GM.pc.isBlindfolded()})
 		GM.ui.addCustomControl("minigame", game)
 		configureMinigame(game, restraintData)
 		game.connect("minigameCompleted", self, "onPickMinigameCompleted")
@@ -183,7 +183,7 @@ func _run():
 		
 		var game = pickMinigameScene.instance()
 		if game.has_method("config"):
-			game.config({"level":restraintData.getLevel()})
+			game.config({"level":restraintData.getLevel(), "blind":GM.pc.isBlindfolded()})
 		GM.ui.addCustomControl("minigame", game)
 		configureMinigame(game, restraintData)
 		game.connect("minigameCompleted", self, "onCutMinigameCompleted")

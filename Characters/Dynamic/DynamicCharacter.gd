@@ -13,6 +13,7 @@ var npcAttacks = []
 var temporaryCharacter = false
 var flags = {}
 var enslaveQuest = null
+var npcSlavery = null
 
 func _init():
 	npcHasMenstrualCycle = true
@@ -80,6 +81,8 @@ func isDynamicCharacter():
 	return true
 
 func getLootTable(_battleName):
+	if(isSlaveToPlayer()):
+		return .getLootTable(_battleName)
 	if(npcCharacterType == CharacterType.Engineer):
 		return EngineerLoot.new()
 	if(npcCharacterType == CharacterType.Guard):
@@ -108,11 +111,23 @@ func getEnslaveQuest() -> NpcEnslavementQuest:
 func setEnslaveQuest(newQuest):
 	enslaveQuest = newQuest
 
+func isSlaveToPlayer():
+	return npcSlavery != null
+
+func getNpcSlavery() -> NpcSlave:
+	return npcSlavery
+
+func setNpcSlavery(newSlav):
+	npcSlavery = newSlav
+
 func onSexEvent(_event : SexEvent):
 	.onSexEvent(_event)
 	
 	if(enslaveQuest != null):
 		enslaveQuest.handleSexEvent(_event)
+	
+	if(npcSlavery != null):
+		npcSlavery.handleSexEvent(_event)
 	
 
 func saveData():
@@ -176,6 +191,16 @@ func saveData():
 	data["lustInterests"] = lustInterests.saveDataDynamicNpc()
 	data["fetishHolder"] = fetishHolder.saveData()
 	data["personality"] = personality.saveData()
+	
+	if(enslaveQuest == null):
+		data["enslaveQuest"] = null
+	else:
+		data["enslaveQuest"] = enslaveQuest.saveData()
+	
+	if(npcSlavery == null):
+		data["npcSlavery"] = null
+	else:
+		data["npcSlavery"] = npcSlavery.saveData()
 	
 	return data
 
@@ -258,5 +283,21 @@ func loadData(data):
 	lustInterests.loadDataDynamicNpc(SAVE.loadVar(data, "lustInterests", {}))
 	fetishHolder.loadData(SAVE.loadVar(data, "fetishHolder", {}))
 	personality.loadData(SAVE.loadVar(data, "personality", {}))
+
+	if(data.has("enslaveQuest") && data["enslaveQuest"] != null):
+		var newEnslaveQuest = NpcEnslavementQuest.new()
+		newEnslaveQuest.setChar(self)
+		setEnslaveQuest(newEnslaveQuest)
+		newEnslaveQuest.loadData(SAVE.loadVar(data, "enslaveQuest", {}))
+	else:
+		enslaveQuest = null
+	
+	if(data.has("npcSlavery") && data["npcSlavery"] != null):
+		var newNpcSlavery = NpcSlave.new()
+		newNpcSlavery.setChar(self)
+		setNpcSlavery(newNpcSlavery)
+		newNpcSlavery.loadData(SAVE.loadVar(data, "npcSlavery", {}))
+	else:
+		npcSlavery = null
 
 	updateAppearance()
